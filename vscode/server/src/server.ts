@@ -13,6 +13,8 @@ import {
 	InitializeResult,
 	DocumentDiagnosticReportKind,
 	type DocumentDiagnosticReport,
+	// Hover,
+	// MarkupKind,
 } from 'vscode-languageserver/node';
 
 import {
@@ -57,7 +59,8 @@ connection.onInitialize((params: InitializeParams) => {
 			diagnosticProvider: {
 				interFileDependencies: false,
 				workspaceDiagnostics: false
-			}
+			},
+			// hoverProvider: true
 		}
 	};
 	if (hasWorkspaceFolderCapability) {
@@ -344,6 +347,46 @@ connection.onCompletionResolve(
 		return item;
 	}
 );
+
+// connection.onHover(
+// 	async (params): Promise<Hover | null> => {
+// 		const document = documents.get(params.textDocument.uri);
+// 		if (!document) return null;
+// 		console.log("Hover params:", params); // ← Add this
+// 		const text = document.getText();
+// 		const offset = document.offsetAt(params.position);
+
+// 		// Find the word at the hover position
+// 		const regex = /\b\w+\b/g;
+// 		let match: RegExpExecArray | null;
+// 		while ((match = regex.exec(text))) {
+// 			if (match.index <= offset && regex.lastIndex >= offset) {
+// 				const word = match[0];
+
+// 				// Search for the word in your documented completions
+// 				for (const key of Object.keys(documentation)) {
+// 					const documented_auto_completions = documentation[key].documented_auto_completions;
+// 					if (documented_auto_completions) {
+// 						for (const item of documented_auto_completions) {
+// 							if (item.item === word) {
+// 								return {
+// 									contents: {
+// 										kind: MarkupKind.Markdown,
+// 										value: `**${item.item}**\n\n${item.documentation}`
+// 									}
+// 								};
+// 							}
+// 						}
+// 					}
+// 				}
+
+// 				break; // stop once we find the word
+// 			}
+// 		}
+
+// 		return null; // no hover info found
+// 	}
+// );
 
 // Make the text document manager listen on the connection
 // for open, change and close text document events
