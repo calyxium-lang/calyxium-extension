@@ -104,7 +104,7 @@ const documentation: MapType<DocumentationType> = {
 				"item": "print",
 				"detail": "string -> unit",
 				"documentation": `
-Print the fiven string to standard output.
+Prints the given string to standard output.
 				
 @since 0.1.0
 				`.trim()
@@ -348,9 +348,9 @@ connection.onCompletionResolve(
 );
 
 function highlightTypes(typeSignature: string): string {
-	const types = ['string', 'int', 'float', 'bool', 'unit', 'bytes'];
+	const types = ['string', 'int', 'float', 'bool', 'unit', 'byte'];
 	const regex = new RegExp(`\\b(${types.join('|')})\\b`, 'g');
-	return typeSignature.replace(regex, '`$1`');
+	return typeSignature.replace(regex, '$1');
 }
 
 connection.onHover(
@@ -377,7 +377,7 @@ connection.onHover(
 									contents: {
 										kind: MarkupKind.Markdown,
 										value: [
-											'```text',
+											'```ocaml',
 											highlightTypes(item.detail || ''),
 											'```',
 											'',
