@@ -29,7 +29,8 @@ connection.onInitialize((params) => {
             diagnosticProvider: {
                 interFileDependencies: false,
                 workspaceDiagnostics: false
-            }
+            },
+            hoverProvider: true
         }
     };
     if (hasWorkspaceFolderCapability) {
@@ -55,13 +56,12 @@ const documentation = {
         "documented_auto_completions": [
             {
                 "item": "print",
-                "detail": "A",
-                "documentation": "BB"
-            },
-            {
-                "item": "println",
-                "detail": "A",
-                "documentation": "BB"
+                "detail": "string -> unit",
+                "documentation": `
+Print the fiven string to standard output.
+				
+@since 0.1.0
+				`.trim()
             },
             {
                 "item": "input",
@@ -270,6 +270,50 @@ connection.onCompletionResolve((item) => {
         return item;
     }
     return item;
+});
+function highlightTypes(typeSignature) {
+    const types = ['string', 'int', 'float', 'bool', 'unit', 'bytes'];
+    const regex = new RegExp(`\\b(${types.join('|')})\\b`, 'g');
+    return typeSignature.replace(regex, '`$1`');
+}
+connection.onHover(async (params) => {
+    const document = documents.get(params.textDocument.uri);
+    if (!document)
+        return null;
+    const text = document.getText();
+    const offset = document.offsetAt(params.position);
+    // Find the word at the hover position
+    const regex = /\b\w+\b/g;
+    let match;
+    while ((match = regex.exec(text))) {
+        if (match.index <= offset && regex.lastIndex >= offset) {
+            const word = match[0];
+            // Search for the word in your documented completions
+            for (const key of Object.keys(documentation)) {
+                const documented_auto_completions = documentation[key].documented_auto_completions;
+                if (documented_auto_completions) {
+                    for (const item of documented_auto_completions) {
+                        if (item.item === word) {
+                            return {
+                                contents: {
+                                    kind: node_1.MarkupKind.Markdown,
+                                    value: [
+                                        '```text',
+                                        highlightTypes(item.detail || ''),
+                                        '```',
+                                        '',
+                                        item.documentation
+                                    ].join('\n')
+                                }
+                            };
+                        }
+                    }
+                }
+            }
+            break; // stop once we find the word
+        }
+    }
+    return null; // no hover info found
 });
 // Make the text document manager listen on the connection
 // for open, change and close text document events

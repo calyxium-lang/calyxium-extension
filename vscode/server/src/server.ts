@@ -13,8 +13,8 @@ import {
 	InitializeResult,
 	DocumentDiagnosticReportKind,
 	type DocumentDiagnosticReport,
-	// Hover,
-	// MarkupKind,
+	Hover,
+	MarkupKind,
 } from 'vscode-languageserver/node';
 
 import {
@@ -60,7 +60,7 @@ connection.onInitialize((params: InitializeParams) => {
 				interFileDependencies: false,
 				workspaceDiagnostics: false
 			},
-			// hoverProvider: true
+			hoverProvider: true
 		}
 	};
 	if (hasWorkspaceFolderCapability) {
@@ -77,7 +77,7 @@ type MapType<T> = {
 	[key: string]: T
 }
 
-type DocItem  = {
+type DocItem = {
 	item: string,
 	detail: string,
 	documentation: string
@@ -90,7 +90,7 @@ type DocumentationType = {
 
 const documentation: MapType<DocumentationType> = {
 	"keywords": {
-		 "undocumented_auto_completions": [
+		"undocumented_auto_completions": [
 			"rec", "if", "then", "else",
 			"let", "match", "with", "return",
 			"for", "use", "mod", "true",
@@ -102,13 +102,12 @@ const documentation: MapType<DocumentationType> = {
 		"documented_auto_completions": [
 			{
 				"item": "print",
-				"detail": "A",
-				"documentation": "BB"
-			},
-			{
-				"item": "println",
-				"detail": "A",
-				"documentation": "BB"
+				"detail": "string -> unit",
+				"documentation": `
+Print the fiven string to standard output.
+				
+@since 0.1.0
+				`.trim()
 			},
 			{
 				"item": "input",
@@ -145,7 +144,7 @@ const documentation: MapType<DocumentationType> = {
 				"detail": "A",
 				"documentation": "BB"
 			}
-    	]
+		]
 	}
 }
 
@@ -348,45 +347,57 @@ connection.onCompletionResolve(
 	}
 );
 
-// connection.onHover(
-// 	async (params): Promise<Hover | null> => {
-// 		const document = documents.get(params.textDocument.uri);
-// 		if (!document) return null;
-// 		console.log("Hover params:", params); // ← Add this
-// 		const text = document.getText();
-// 		const offset = document.offsetAt(params.position);
+function highlightTypes(typeSignature: string): string {
+	const types = ['string', 'int', 'float', 'bool', 'unit', 'bytes'];
+	const regex = new RegExp(`\\b(${types.join('|')})\\b`, 'g');
+	return typeSignature.replace(regex, '`$1`');
+}
 
-// 		// Find the word at the hover position
-// 		const regex = /\b\w+\b/g;
-// 		let match: RegExpExecArray | null;
-// 		while ((match = regex.exec(text))) {
-// 			if (match.index <= offset && regex.lastIndex >= offset) {
-// 				const word = match[0];
+connection.onHover(
+	async (params): Promise<Hover | null> => {
+		const document = documents.get(params.textDocument.uri);
+		if (!document) return null;
+		const text = document.getText();
+		const offset = document.offsetAt(params.position);
 
-// 				// Search for the word in your documented completions
-// 				for (const key of Object.keys(documentation)) {
-// 					const documented_auto_completions = documentation[key].documented_auto_completions;
-// 					if (documented_auto_completions) {
-// 						for (const item of documented_auto_completions) {
-// 							if (item.item === word) {
-// 								return {
-// 									contents: {
-// 										kind: MarkupKind.Markdown,
-// 										value: `**${item.item}**\n\n${item.documentation}`
-// 									}
-// 								};
-// 							}
-// 						}
-// 					}
-// 				}
+		// Find the word at the hover position
+		const regex = /\b\w+\b/g;
+		let match: RegExpExecArray | null;
+		while ((match = regex.exec(text))) {
+			if (match.index <= offset && regex.lastIndex >= offset) {
+				const word = match[0];
 
-// 				break; // stop once we find the word
-// 			}
-// 		}
+				// Search for the word in your documented completions
+				for (const key of Object.keys(documentation)) {
+					const documented_auto_completions = documentation[key].documented_auto_completions;
+					if (documented_auto_completions) {
+						for (const item of documented_auto_completions) {
+							if (item.item === word) {
+								return {
+									contents: {
+										kind: MarkupKind.Markdown,
+										value: [
+											'```text',
+											highlightTypes(item.detail || ''),
+											'```',
+											'',
+											item.documentation
+										].join('\n')
 
-// 		return null; // no hover info found
-// 	}
-// );
+									}
+								};
+							}
+						}
+					}
+				}
+
+				break; // stop once we find the word
+			}
+		}
+
+		return null; // no hover info found
+	}
+);
 
 // Make the text document manager listen on the connection
 // for open, change and close text document events
