@@ -1,0 +1,64 @@
+{
+  "name": "calyxium-lsp",
+  "displayName": "Calyxium LSP",
+  "description": "A LSP Server/Client for Calyxium",
+  "version": "1.0.0",
+  "publisher": "Calyxium-lang",
+  "icon": "imgs/icon.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/calyxium-lang/calyxium-syntax"
+  },
+  "engines": {
+    "vscode": "^1.102.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Linters",
+    "Language Packs",
+    "Extension Packs",
+    "Languages",
+    "Formatters",
+    "Snippets",
+    "Other"
+  ],
+  "scripts": {
+    "build": "vsce package",
+    "compile": "tsc -b",
+    "watch": "tsc -b -w",
+    "postinstall": "cd client && npm install && cd ../server && npm install && cd .."
+  },
+  "main": "./client/out/extension",
+  "activationEvents": [
+    "onLanguage:calyxium"
+	],
+  "contributes": {
+    "configuration": {
+      "type": "object",
+      "title": "Example configuration",
+      "properties": {
+        "languageServerExample.maxNumberOfProblems": {
+          "scope": "resource",
+          "type": "number",
+          "default": 100,
+          "description": "Controls the maximum number of problems produced by the server."
+        },
+        "languageServerExample.trace.server": {
+          "scope": "window",
+          "type": "string",
+          "enum": [
+            "off",
+            "messages",
+            "verbose"
+          ],
+          "default": "off",
+          "description": "Traces the communication between VS Code and the language server."
+        }
+      }
+    }
+  },
+  "dependencies": {
+    "@types/node": "^24.1.0",
+    "typescript": "^5.8.3"
+  }
+}
