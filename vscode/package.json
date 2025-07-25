@@ -25,7 +25,7 @@
   "scripts": {
     "build": "vsce package",
     "compile": "tsc -b",
-    "package": "tsc -b & vsce package -o bin/calyxium-lsp.vsix",
+    "package": "tsc -b & mkdir bin & vsce package -o bin/calyxium-lsp.vsix",
     "watch": "tsc -b -w"
   },
   "main": "out/extension",
