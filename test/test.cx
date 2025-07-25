@@ -8,7 +8,7 @@ let double(x: int): int {
 let sqr(x: int): int {
     return x * x
 }
-
+print
 assert(3 |> double |> sqr == 36)
 
 assert(123 |> to_string == "123")
@@ -16,7 +16,6 @@ assert(123 |> to_string == "123")
 assert((2 + 3) |> sqr == 25)
 
 -- $ hi i am doc $
-
 let y: int = 7 |> double
 assert(y == 14) 
 

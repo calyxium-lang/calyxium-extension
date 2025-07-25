@@ -25,13 +25,12 @@
   "scripts": {
     "build": "vsce package",
     "compile": "tsc -b",
-    "watch": "tsc -b -w",
-    "postinstall": "cd client && npm install && cd ../server && npm install && cd .."
+    "watch": "tsc -b -w"
   },
-  "main": "./client/out/extension",
+  "main": "out/extension",
   "activationEvents": [
     "onLanguage:calyxium"
-	],
+  ],
   "contributes": {
     "configuration": {
       "type": "object",
@@ -59,6 +58,12 @@
   },
   "dependencies": {
     "@types/node": "^24.1.0",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "vscode-languageclient": "^9.0.1",
+    "vscode-languageserver": "^9.0.1",
+    "vscode-languageserver-textdocument": "^1.0.12"
+  },
+  "devDependencies": {
+    "vscode": "^1.1.37"
   }
 }
