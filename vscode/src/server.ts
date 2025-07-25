@@ -140,7 +140,7 @@ const documentation: MapType<DocumentationType> = {
             },
             {
                 "item": "assert",
-                "detail": "bool -> bool",
+                "detail": "bool -> unit",
                 "documentation": ""
             }
         ]
