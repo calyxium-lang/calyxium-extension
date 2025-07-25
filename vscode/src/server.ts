@@ -312,12 +312,6 @@ connection.onCompletionResolve(
 	}
 );
 
-function highlightTypes(typeSignature: string): string {
-	const types = ['string', 'int', 'float', 'bool', 'unit', 'byte'];
-	const regex = new RegExp(`\\b(${types.join('|')})\\b`, 'g');
-	return typeSignature.replace(regex, '$1');
-}
-
 connection.onHover(
 	async (params): Promise<Hover | null> => {
 		const document = documents.get(params.textDocument.uri);
@@ -339,7 +333,7 @@ connection.onHover(
 							kind: MarkupKind.Markdown,
 							value: [
 								'```ocaml',
-								highlightTypes(obj.detail || ''),
+								obj.detail,
 								'```',
 								'',
 								obj.documentation
