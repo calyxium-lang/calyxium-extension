@@ -105,43 +105,43 @@ const documentation: MapType<DocumentationType> = {
         "documented_auto_completions": [
             {
                 "item": "print",
-                "detail": "string -> unit",
-                "documentation": "\nPrints the given string to standard output.\n\n@since 0.1.0"
+                "detail": "any -> unit",
+                "documentation": "\nPrints the given string to standard output.\n\n***@since*** 0.1.0"
             },
             {
                 "item": "input",
                 "detail": "string -> unit",
-                "documentation": ""
+                "documentation": "\nPrompts the user for input.\n\n***@since*** 0.1.0"
             },
             {
                 "item": "to_bytes",
                 "detail": "string -> []byte",
-                "documentation": ""
+                "documentation": "\nConverts a string to a byte array.\n\n***@since*** 0.1.0"
             },
             {
                 "item": "to_float",
                 "detail": "(string -> int) -> float",
-                "documentation": ""
+                "documentation": "\nConverts a value to a float.\n\n***@since*** 0.1.0"
             },
             {
                 "item": "to_int",
                 "detail": "(byte -> string -> float) -> int",
-                "documentation": ""
+                "documentation": "\nConverts a value to an integer.\n\n***@since*** 0.1.0"
             },
             {
                 "item": "length",
-                "detail": "unit -> int",
-                "documentation": ""
+                "detail": "any -> int",
+                "documentation": "\nReturns the length of a value (e.g., array, string).\n\n***@since*** 0.1.0"
             },
             {
                 "item": "to_string",
-                "detail": "unit -> string",
-                "documentation": ""
+                "detail": "any -> string",
+                "documentation": "\nConverts any value to a string.\n\n***@since*** 0.1.0"
             },
             {
                 "item": "assert",
                 "detail": "bool -> unit",
-                "documentation": ""
+                "documentation": "\nAsserts that a condition is true. Halts execution on failure.\n\n***@since*** 0.1.0"
             }
         ]
     }
