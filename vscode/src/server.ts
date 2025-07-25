@@ -98,7 +98,8 @@ const documentation: MapType<DocumentationType> = {
             "let", "match", "with", "return",
             "for", "use", "mod", "true",
             "false", "enum", "struct", "class",
-            "extends", "fn", "ref"
+            "extends", "fn", "ref", "int", "float",
+			"bool", "string", "unit", "byte"
         ]
     },
     "functions": {
