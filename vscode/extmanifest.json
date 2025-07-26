@@ -22,38 +22,22 @@
     "Snippets",
     "Other"
   ],
-  "scripts": {
-    "init": "npm install & npm dedupe & npm prune",
-    "compile": "tsc -b",
-    "package": "cd ../go-backend/ & powershell .\\scripts\\build_wasm.ps1 & cd ../vscode/ & node -e \"require('fs').copyFile('../go-backend/bin/js/calyxium-lsp-js.wasm', 'lib/calyxium-lsp.wasm', (err) => {})\" & tsc -b & node build.js & cd build & npm install & npm dedupe & npm prune & vsce package -o ../bin/calyxium.vsix & cd ../ & node -e \"require('fs').rm('build', { recursive: true }, () =>{}); require('fs').rm('out', { recursive: true }, () =>{})\"",
-    "watch": "tsc -b -w"
-  },
   "main": "out/extension",
   "activationEvents": [
     "onLanguage:calyxium"
   ],
   "contributes": {
-    "languages": [
-      {
-        "id": "calyxium",
-        "aliases": [
-          "calyxium",
-          "calyxium"
-        ],
-        "extensions": [
-          ".cx",
-          ".cxm"
-        ],
-        "configuration": "syntax-highlighting/language-configuration.json"
-      }
-    ],
-    "grammars": [
-      {
-        "language": "calyxium",
-        "scopeName": "source.calyxium",
-        "path": "syntax-highlighting/calyxium.tmLanguage.json"
-      }
-    ],
+    "languages": [{
+      "id": "calyxium",
+      "aliases": ["calyxium", "calyxium"],
+      "extensions": [".cx",".cxm"],
+      "configuration": "syntax-highlighting/language-configuration.json"
+    }],
+    "grammars": [{
+      "language": "calyxium",
+      "scopeName": "source.calyxium",
+      "path": "syntax-highlighting/calyxium.tmLanguage.json"
+    }],
     "configuration": {
       "type": "object",
       "title": "Example configuration",
@@ -79,12 +63,6 @@
     }
   },
   "dependencies": {
-    "strip-comments": "^2.0.1",
     "vscode-languageclient": "^9.0.1"
-  },
-  "devDependencies": {
-    "@types/node": "^24.1.0",
-    "typescript": "^5.8.3",
-    "vscode": "^1.1.37"
   }
 }

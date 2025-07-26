@@ -5,3 +5,5 @@ vscode/out
 *.exe
 *.o
 go-backend/bin
+vscode/build
+vscode/lib/calyxium-lsp.wasm

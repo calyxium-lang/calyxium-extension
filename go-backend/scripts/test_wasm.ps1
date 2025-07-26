@@ -4,6 +4,4 @@ New-Item bin/js -Type Directory -Force | Out-Null
 $Env:GOOS="js";
 $Env:GOARCH="wasm"; & go build -ldflags "-X main.isWASM=true" -o "bin/js/calyxium-lsp-js.wasm"
 
-New-Item bin/wasip1 -Type Directory -Force | Out-Null
-$Env:GOOS="wasip1";
-$Env:GOARCH="wasm"; & go build -ldflags "-X main.isWASM=true" -o "bin/wasip1/calyxium-lsp-wasip1.wasm"
+node "$(go env GOROOT)/lib/wasm/wasm_exec_node.js" "bin/js/calyxium-lsp-js.wasm"

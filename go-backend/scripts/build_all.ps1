@@ -54,7 +54,7 @@ $Env:GOARCH="amd64"; & go build -o "bin/illumos/calyxium-lsp-illumos-x64"
 
 New-Item bin/js -Type Directory -Force | Out-Null
 $Env:GOOS="js";
-$Env:GOARCH="wasm"; & go build -o "bin/js/calyxium-lsp-js.wasm"
+$Env:GOARCH="wasm"; & go build -ldflags "-X main.isWASM=true" -o "bin/js/calyxium-lsp-js.wasm"
 
 New-Item bin/linux -Type Directory -Force | Out-Null
 $Env:GOOS="linux";
@@ -98,7 +98,7 @@ $Env:GOARCH="amd64"; & go build -o "bin/solaris/calyxium-lsp-solaris-x64"
 
 New-Item bin/wasip1 -Type Directory -Force | Out-Null
 $Env:GOOS="wasip1";
-$Env:GOARCH="wasm"; & go build -o "bin/wasip1/calyxium-lsp-wasip1.wasm"
+$Env:GOARCH="wasm"; & go build -ldflags "-X main.isWASM=true" -o "bin/wasip1/calyxium-lsp-wasip1.wasm"
 
 New-Item bin/windows -Type Directory -Force | Out-Null
 $Env:GOOS="windows";

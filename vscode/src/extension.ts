@@ -1,5 +1,5 @@
-import * as path from 'path';
-import * as net from 'net';
+import path = require('path');
+import net = require('net');
 import { workspace, ExtensionContext } from 'vscode';
 
 import {
@@ -10,52 +10,122 @@ import {
 	TransportKind
 } from 'vscode-languageclient/node';
 
+var childProcess = require('child_process');
+
+function runScript(scriptPath, callback) {
+
+    // keep track of whether callback has been invoked to prevent multiple invocations
+    var invoked = false;
+
+    var process = childProcess.fork(scriptPath);
+
+    // listen for errors as they may prevent the exit event from firing
+    process.on('error', function (err) {
+        if (invoked) return;
+        invoked = true;
+        callback(err);
+    });
+
+    // execute the callback once the process has finished running
+    process.on('exit', function (code) {
+        if (invoked) return;
+        invoked = true;
+        var err = code === 0 ? null : new Error('exit code ' + code);
+        callback(err);
+    });
+}
+
 let client: LanguageClient;
 
-export function activate(context: ExtensionContext) {
-	// The server is implemented in node
-	const serverModule = context.asAbsolutePath(
-		path.join('out', 'server.js')
-	);
+const useTest = true;
 
-	// If the extension is launched in debug mode then the debug server options are used
-	// Otherwise the run options are used
+export function activate(context: ExtensionContext) {
+	let serverOptions: ServerOptions;
+	if (!useTest) {
+		const lspWasmPath = context.asAbsolutePath(path.join('lib', 'calyxium-lsp.wasm'))
+		const wasmRuntimePath = context.asAbsolutePath(path.join('lib', 'wasm_exec.js'))
+		const serverPath = context.asAbsolutePath(path.join('out', 'server_wasm.js'))
+		
+		console.log(serverPath + " " + lspWasmPath)
+		const serverOptions: ServerOptions = {
+			run: {
+				module: serverPath,
+				transport: TransportKind.stdio,
+				options: {
+					execArgv: [serverPath, wasmRuntimePath, lspWasmPath]
+				}
+			},
+			debug: {
+				module: serverPath,
+				transport: TransportKind.stdio,
+				options: {
+					execArgv: [serverPath, wasmRuntimePath, lspWasmPath]
+				}
+			}
+		}
+	} else {
+		serverOptions = () => {
+			let socket = net.connect({ port: 7998 })
+			let result: StreamInfo = {
+				writer: socket,
+				reader: socket
+			};
+			return Promise.resolve(result)
+		}
+	}
+
 	// const serverOptions: ServerOptions = {
-	// 	run: { module: serverModule, transport: TransportKind.ipc },
+	// 	command: "node",
+	// 	transport: TransportKind.stdio,
+	// 	args: [serverPath, wasmRuntimePath, lspWasmPath]
+	// };
+
+	// const serverOptions: ServerOptions = {
+	// 	command: "calyxium-lsp-win-x64",
+	// 	transport: TransportKind.stdio,
+	// 	args: ["stdio"]
+	// };
+
+
+	// const serverOptions: ServerOptions = {
+	// 	run: {
+	// 		module: context.asAbsolutePath(
+	// 			path.join('out', 'server.js')
+	// 		),
+	// 		transport: TransportKind.stdio
+	// 	},
 	// 	debug: {
-	// 		module: serverModule,
-	// 		transport: TransportKind.ipc,
+	// 		module: context.asAbsolutePath(
+	// 			path.join('out', 'server.js')
+	// 		),
+	// 		transport: TransportKind.stdio,
 	// 	}
 	// };
 
-	const serverOptions = () => {
-		let socket = net.connect({ port: 7998 })
-		let result: StreamInfo = {
-			writer: socket,
-			reader: socket
-		};
-		return Promise.resolve(result)
-	}
+	// const serverOptions = () => {
+	// 	let socket = net.connect({ port: 7998 })
+	// 	let result: StreamInfo = {
+	// 		writer: socket,
+	// 		reader: socket
+	// 	};
+	// 	return Promise.resolve(result)
+	// }
 
 	// Options to control the language client
 	const clientOptions: LanguageClientOptions = {
-		// Register the server for plain text documents
 		documentSelector: [{ scheme: 'file', language: 'calyxium' }],
 		synchronize: {
-			// Notify the server about file changes to '.clientrc files contained in the workspace
 			fileEvents: workspace.createFileSystemWatcher('**/.clientrc')
 		}
 	};
 
-	// Create the language client and start the client.
 	client = new LanguageClient(
-		'languageServerExample',
-		'Language Server Example',
+		"calyxium-lang",
+		"Calyxiym Lang",
 		serverOptions,
 		clientOptions
 	);
 
-	// Start the client. This will also launch the server
 	client.start();
 }
 

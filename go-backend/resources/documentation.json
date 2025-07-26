@@ -2,7 +2,7 @@
     "keywords": {
         "undocumented_auto_completions": [
             "rec", "if", "then", "else",
-            "let", "match", "with", "return",
+            "let", "match", "with",
             "for", "use", "mod", "true",
             "false", "enum", "struct", "class",
             "extends", "fn", "ref", "int", "float",
