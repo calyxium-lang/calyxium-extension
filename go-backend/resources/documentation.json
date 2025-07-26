@@ -1,0 +1,61 @@
+{
+    "keywords": {
+        "undocumented_auto_completions": [
+            "rec", "if", "then", "else",
+            "let", "match", "with", "return",
+            "for", "use", "mod", "true",
+            "false", "enum", "struct", "class",
+            "extends", "fn", "ref", "int", "float",
+			"bool", "string", "unit", "byte"
+        ]
+    },
+    "functions": {
+        "documented_auto_completions": [
+            {
+                "item": "panic",
+                "detail": "string -> unit",
+                "documentation": "\nThrows an error then haults the program.\n\n***@since*** 0.1.0"
+            },
+            {
+                "item": "print",
+                "detail": "any -> unit",
+                "documentation": "\nPrints the given string to standard output.\n\n***@since*** 0.1.0"
+            },
+            {
+                "item": "input",
+                "detail": "string -> unit",
+                "documentation": "\nPrompts the user for input.\n\n***@since*** 0.1.0"
+            },
+            {
+                "item": "to_bytes",
+                "detail": "string -> []byte",
+                "documentation": "\nConverts a string to a byte array.\n\n***@since*** 0.1.0"
+            },
+            {
+                "item": "to_float",
+                "detail": "(string -> int) -> float",
+                "documentation": "\nConverts a value to a float.\n\n***@since*** 0.1.0"
+            },
+            {
+                "item": "to_int",
+                "detail": "(byte -> string -> float) -> int",
+                "documentation": "\nConverts a value to an integer.\n\n***@since*** 0.1.0"
+            },
+            {
+                "item": "length",
+                "detail": "any -> int",
+                "documentation": "\nReturns the length of a value (e.g., array, string).\n\n***@since*** 0.1.0"
+            },
+            {
+                "item": "to_string",
+                "detail": "any -> string",
+                "documentation": "\nConverts any value to a string.\n\n***@since*** 0.1.0"
+            },
+            {
+                "item": "assert",
+                "detail": "bool -> unit",
+                "documentation": "\nAsserts that a condition is true. Halts execution on failure.\n\n***@since*** 0.1.0"
+            }
+        ]
+    }
+}

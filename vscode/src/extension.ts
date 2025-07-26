@@ -1,10 +1,12 @@
 import * as path from 'path';
+import * as net from 'net';
 import { workspace, ExtensionContext } from 'vscode';
 
 import {
 	LanguageClient,
 	LanguageClientOptions,
 	ServerOptions,
+	StreamInfo,
 	TransportKind
 } from 'vscode-languageclient/node';
 
@@ -18,13 +20,22 @@ export function activate(context: ExtensionContext) {
 
 	// If the extension is launched in debug mode then the debug server options are used
 	// Otherwise the run options are used
-	const serverOptions: ServerOptions = {
-		run: { module: serverModule, transport: TransportKind.ipc },
-		debug: {
-			module: serverModule,
-			transport: TransportKind.ipc,
-		}
-	};
+	// const serverOptions: ServerOptions = {
+	// 	run: { module: serverModule, transport: TransportKind.ipc },
+	// 	debug: {
+	// 		module: serverModule,
+	// 		transport: TransportKind.ipc,
+	// 	}
+	// };
+
+	const serverOptions = () => {
+		let socket = net.connect({ port: 7998 })
+		let result: StreamInfo = {
+			writer: socket,
+			reader: socket
+		};
+		return Promise.resolve(result)
+	}
 
 	// Options to control the language client
 	const clientOptions: LanguageClientOptions = {
