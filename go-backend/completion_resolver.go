@@ -51,8 +51,6 @@ func onChange(context *glsp.Context, params *protocol.DidChangeTextDocumentParam
 				docs[params.TextDocument.URI] = change.Text
 				break
 			}
-		default:
-			panic("OH FUCK")
 		}
 	}
 	return nil
