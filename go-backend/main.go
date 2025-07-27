@@ -2,13 +2,7 @@ package main
 
 import (
 	"embed"
-	"fmt"
-	"io"
-	"net/url"
 	"os"
-	"reflect"
-	"strings"
-	"sync"
 
 	"github.com/tliron/commonlog"
 	"github.com/tliron/glsp"
@@ -37,14 +31,35 @@ var (
 	res embed.FS
 )
 
-var wg sync.WaitGroup
+var docs = map[string]any{}
+
+func positionToOffset(text string, pos protocol.Position) int {
+	line, character := int(pos.Line), int(pos.Character)
+	lines := []rune(text)
+
+	currentLine := 0
+	currentChar := 0
+
+	for i, r := range lines {
+		if currentLine == line && currentChar == character {
+			return i
+		}
+		if r == '\n' {
+			currentLine++
+			currentChar = 0
+		} else {
+			currentChar++
+		}
+	}
+
+	return len(lines) // fallback
+}
 
 func main() {
 	isWASM_BOOL = isWASM == "true"
 
 	initDocJson()
 
-	// This increases logging verbosity (optional)
 	commonlog.Configure(1, nil)
 
 	handler = protocol.Handler{
@@ -54,27 +69,8 @@ func main() {
 		TextDocumentCompletion: completionInit,
 		TextDocumentHover:      hoverResolve,
 		Shutdown:               shutdown,
-		TextDocumentDidChange: func(context *glsp.Context, params *protocol.DidChangeTextDocumentParams) error {
-			turi := params.TextDocument.URI
-
-			path, _ := url.PathUnescape(strings.ReplaceAll(turi, "file:///", ""))
-			file, _ := os.Open(path)
-			content, _ := io.ReadAll(file)
-			file.Close()
-
-			str := string(content)
-
-			fmt.Println(reflect.TypeOf(params.ContentChanges[0]))
-			if reflect.TypeOf(params.ContentChanges[0]).String() == "protocol.TextDocumentContentChangeEvent" {
-				a, b := params.ContentChanges[0].(protocol.TextDocumentContentChangeEvent).Range.IndexesIn(str)
-
-				//TODO: Figure out how to apply updated to existing document
-				// params.
-				fmt.Println(str[a:b])
-			}
-			return nil
-		},
-		SetTrace: setTrace,
+		TextDocumentDidChange:  onChange,
+		SetTrace:               setTrace,
 	}
 
 	server := server.NewServer(&handler, lsName, false)
