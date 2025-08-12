@@ -9,6 +9,9 @@
 			"include": "#err"
 		},
 		{
+			"include": "#big_comments"
+		},
+		{
 			"include": "#comments"
 		},
 		{
@@ -48,22 +51,6 @@
 				}
 			]
 		},
-		"comments": {
-			"patterns": [
-				{
-					"name": "keyword.operator.arithmetic.calyxium",
-					"match": "([A-Za-z]+[A-Za-z0-9_]*)--"
-				},
-				{
-					"name": "comment.block.documentation.calyxium",
-					"match": "--\\s\\$.*\\$"
-				},
-				{
-					"name": "comment.line.double-dash.calyxium",
-					"match": "--.*$"
-				}
-			]
-		},
 		"operators": {
 			"patterns": [
 				{
@@ -84,11 +71,11 @@
 				},
 				{
 					"name": "keyword.operator.bitwise.calyxium",
-					"match": "(&|\\||\\^|~|`|\\$)"
+					"match": "(\\||\\^)"
 				},
 				{
 					"name": "keyword.operator.bitshift.calyxium",
-					"match": "(<<=|>>=|<<|>>|>>>)"
+					"match": "(<<=|>>=)"
 				},
 				{
 					"name": "keyword.operator.bitwise.assignment.calyxium",
@@ -103,12 +90,12 @@
 		"numbers": {
 			"patterns": [
 				{
-				"name": "constant.numeric",
+					"name": "constant.numeric",
 					"match": "\\b(0b[01_]+|0x[0-9a-fA-F_]+|\\d[\\d_]*(\\.\\d[\\d_]*)?([eE][+-]?\\d+)?)([fFdD]?)\\b"
 				},
 				{
-				"name": "constant.numeric",
-						"match": "\\b(0b[01_]+|0x[0-9a-fA-F_]+|\\d[\\d_]*(\\.\\d[\\d_]*)?([eE][+-]?\\d+)?)([fFdD]?)\\b"
+					"name": "constant.numeric",
+					"match": "\\b(0b[01_]+|0x[0-9a-fA-F_]+|\\d[\\d_]*(\\.\\d[\\d_]*)?([eE][+-]?\\d+)?)([fFdD]?)\\b"
 				}
 			]
 		},
@@ -116,7 +103,27 @@
 			"patterns": [
 				{
 					"name": "keyword.control.calyxium",
-					"match": "\\b(rec|if|then|else|let|use|with|for|match|enum|mod|struct|class|extends)\\b"
+					"match": "\\b(ref|rec|if|then|else|let|use|with|for|match|enum|mod|struct|class|extends|in|type)\\b"
+				},
+				{
+					"name": "keyword.control.calyxium",
+					"match": "\\b(lsl|lsr|land|lor|lnot|lxor|not)\\b"
+				}
+			]
+		},
+		"comments": {
+			"patterns": [
+				{
+					"name": "keyword.operator.arithmetic.calyxium",
+					"match": "([A-Za-z]+[A-Za-z0-9_]*)--"
+				},
+				{
+					"name": "comment.block.documentation.calyxium",
+					"match": "--\\s\\$.*\\$"
+				},
+				{
+					"name": "comment.line.double-dash.calyxium",
+					"match": "--.*$"
 				}
 			]
 		},
@@ -164,13 +171,13 @@
 		},
 		"primitives": {
 			"name": "storage.type.primitive.calyxium",
-			"match": "\\b(int|float|string|bool|byte)\\b"
+			"match": "\\b(any|unit|int|float|string|bool|byte)\\b"
 		},
 		"functions": {
 			"patterns": [
 				{
 					"name": "support.function",
-					"match": "((panic|print|to_float|to_int|to_string|to_bytes|length|input|assert)(\\(|))"
+					"match": "((panic|print|to_float|to_int|to_string|to_bytes|length|input|assert|of_type)(\\(|))"
 				}
 			]
 		},
@@ -197,7 +204,7 @@
 			"patterns": [
 				{
 					"name": "support.variable",
-					"match": "[A-Za-z]+[A-Za-z0-9_$]*"
+					"match": "[A-Za-z]+[A-Za-z0-9_$]*'*"
 				}
 			]
 		}

@@ -26,18 +26,39 @@
   "activationEvents": [
     "onLanguage:calyxium"
   ],
-  "contributes": {
-    "languages": [{
-      "id": "calyxium",
-      "aliases": ["calyxium", "calyxium"],
-      "extensions": [".cx",".cxm"],
-      "configuration": "syntax-highlighting/language-configuration.json"
-    }],
-    "grammars": [{
-      "language": "calyxium",
-      "scopeName": "source.calyxium",
-      "path": "syntax-highlighting/calyxium.tmLanguage.json"
-    }],
+    "contributes": {
+    "languages": [
+      {
+        "id": "calyxium",
+        "aliases": [
+          "calyxium"
+        ],
+        "extensions": [
+          ".cx",
+          ".cxm"
+        ],
+        "configuration": "syntax-highlighting/language-configuration.json"
+      },
+      {
+        "id": "calyxiumHover",
+        "extensions": [
+          ".cxh"
+        ],
+        "configuration": "syntax-highlighting/language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "calyxium",
+        "scopeName": "source.calyxium",
+        "path": "syntax-highlighting/calyxium.tmLanguage.json"
+      },
+      {
+        "language": "calyxiumHover",
+        "scopeName": "source.calyxiumHover",
+        "path": "syntax-highlighting/calyxiumHover.tmLanguage.json"
+      }
+    ],
     "configuration": {
       "type": "object",
       "title": "Example configuration",

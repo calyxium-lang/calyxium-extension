@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"io"
 	"net/url"
 	"os"
@@ -11,6 +10,18 @@ import (
 	"github.com/tliron/glsp"
 	protocol "github.com/tliron/glsp/protocol_3_16"
 )
+
+func initDoc(context *glsp.Context, params *protocol.DidOpenTextDocumentParams) error {
+	path, _ := url.PathUnescape(strings.ReplaceAll(params.TextDocument.URI, "file:///", ""))
+	file, _ := os.Open(path)
+	content, _ := io.ReadAll(file)
+	file.Close()
+
+	docs[params.TextDocument.URI] = string(content)
+	functionTypeSignatures[params.TextDocument.URI] = parseFile(params.TextDocument.URI, string(content))
+
+	return nil
+}
 
 func onChange(context *glsp.Context, params *protocol.DidChangeTextDocumentParams) error {
 	turi := params.TextDocument.URI
@@ -35,7 +46,7 @@ func onChange(context *glsp.Context, params *protocol.DidChangeTextDocumentParam
 				start := positionToOffset(str, change.Range.Start)
 				end := positionToOffset(str, change.Range.End)
 				if start > len(str) || end > len(str) || start > end {
-					return fmt.Errorf("invalid range in change")
+					return nil
 				}
 
 				updated := []rune(str[:start])
@@ -53,6 +64,7 @@ func onChange(context *glsp.Context, params *protocol.DidChangeTextDocumentParam
 			}
 		}
 	}
+	functionTypeSignatures[params.TextDocument.URI] = parseFile(params.TextDocument.URI, docs[params.TextDocument.URI].(string))
 	return nil
 }
 
@@ -88,11 +100,30 @@ func hoverResolve(context *glsp.Context, params *protocol.HoverParams) (*protoco
 
 	idx := params.Position.IndexIn(str)
 
-	rgx, _ := regexp.Compile(`\b\w+\b`)
+	rgx, _ := regexp.Compile(`\b\w+`)
 	matches := rgx.FindAllStringIndex(str, -1)
 	for _, a := range matches {
 		if a[0] <= idx && a[1] >= idx {
 			word := str[a[0]:a[1]]
+
+			if functionTypeSignatures[params.TextDocument.URI] != nil {
+				if functionDocumentations[params.TextDocument.URI] != nil && functionDocumentations[params.TextDocument.URI][word] != "" {
+					return &protocol.Hover{
+						Contents: map[string]any{
+							"kind":  protocol.MarkupKindMarkdown,
+							"value": "```calyxiumHover\n" + functionTypeSignatures[params.TextDocument.URI][word] + "\n``` \n" + functionDocumentations[params.TextDocument.URI][word],
+						},
+					}, nil
+				}
+				if functionTypeSignatures[params.TextDocument.URI][word] != "" {
+					return &protocol.Hover{
+						Contents: map[string]any{
+							"kind":  protocol.MarkupKindMarkdown,
+							"value": "```calyxiumHover\n" + functionTypeSignatures[params.TextDocument.URI][word] + "\n``` ",
+						},
+					}, nil
+				}
+			}
 			item := completion_object_map[word]
 			if item == nil {
 				return nil, nil
@@ -103,7 +134,7 @@ func hoverResolve(context *glsp.Context, params *protocol.HoverParams) (*protoco
 			return &protocol.Hover{
 				Contents: map[string]any{
 					"kind":  protocol.MarkupKindMarkdown,
-					"value": "```calyxium\n" + *item.(protocol.CompletionItem).Detail + "\n``` " + item.(protocol.CompletionItem).Documentation.(map[string]any)["value"].(string),
+					"value": "```calyxiumHover\n" + *item.(protocol.CompletionItem).Detail + "\n``` " + item.(protocol.CompletionItem).Documentation.(map[string]any)["value"].(string),
 				},
 			}, nil
 		}

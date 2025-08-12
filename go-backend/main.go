@@ -2,7 +2,10 @@ package main
 
 import (
 	"embed"
+	"io"
+	"net/url"
 	"os"
+	"strings"
 
 	"github.com/tliron/commonlog"
 	"github.com/tliron/glsp"
@@ -32,6 +35,8 @@ var (
 )
 
 var docs = map[string]any{}
+var functionTypeSignatures = map[string]map[string]string{}
+var functionDocumentations = map[string]map[string]string{}
 
 func positionToOffset(text string, pos protocol.Position) int {
 	line, character := int(pos.Line), int(pos.Character)
@@ -56,6 +61,8 @@ func positionToOffset(text string, pos protocol.Position) int {
 }
 
 func main() {
+	initJS()
+
 	isWASM_BOOL = isWASM == "true"
 
 	initDocJson()
@@ -63,14 +70,53 @@ func main() {
 	commonlog.Configure(1, nil)
 
 	handler = protocol.Handler{
+		TextDocumentCodeLens: func(context *glsp.Context, params *protocol.CodeLensParams) ([]protocol.CodeLens, error) {
+			lenses := []protocol.CodeLens{}
+			for _, v := range doCodeLense(functionTypeSignatures[params.TextDocument.URI], docs[params.TextDocument.URI].(string)) {
+				lenses = append(lenses, protocol.CodeLens{
+					Range: protocol.Range{
+						Start: protocol.Position{
+							Line:      protocol.UInteger(v["line"].(int64)),
+							Character: 0,
+						},
+						End: protocol.Position{
+							Line:      protocol.UInteger(v["line"].(int64)),
+							Character: 10,
+						},
+					},
+					Command: &protocol.Command{
+						Title:     v["name"].(string),
+						Arguments: []any{},
+					},
+				})
+			}
+			return lenses, nil
+		},
 		Initialize:             initialize,
 		Initialized:            initialized,
 		CompletionItemResolve:  completionResolve,
 		TextDocumentCompletion: completionInit,
 		TextDocumentHover:      hoverResolve,
 		Shutdown:               shutdown,
-		TextDocumentDidChange:  onChange,
-		SetTrace:               setTrace,
+		TextDocumentDidSave: func(context *glsp.Context, params *protocol.DidSaveTextDocumentParams) error {
+			path, _ := url.PathUnescape(strings.ReplaceAll(params.TextDocument.URI, "file:///", ""))
+			file, _ := os.Open(path)
+			content, _ := io.ReadAll(file)
+			file.Close()
+
+			functionTypeSignatures[params.TextDocument.URI] = parseFile(params.TextDocument.URI, string(content))
+
+			return nil
+		},
+		TextDocumentDidOpen:   initDoc,
+		TextDocumentDidChange: onChange,
+		TextDocumentDidClose: func(context *glsp.Context, params *protocol.DidCloseTextDocumentParams) error {
+			docs[params.TextDocument.URI] = nil
+			functionTypeSignatures[params.TextDocument.URI] = nil
+			functionDocumentations[params.TextDocument.URI] = nil
+			return nil
+		},
+		SetTrace: setTrace,
 	}
 
 	server := server.NewServer(&handler, lsName, false)

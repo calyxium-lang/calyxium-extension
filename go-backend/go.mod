@@ -12,6 +12,10 @@ require (
 require (
 	github.com/arduino/go-paths-helper v1.6.1 // indirect
 	github.com/aymanbagabas/go-osc52/v2 v2.0.1 // indirect
+	github.com/dlclark/regexp2 v1.11.4 // indirect
+	github.com/dop251/goja v0.0.0-20250630131328-58d95d85e994 // indirect
+	github.com/go-sourcemap/sourcemap v2.1.3+incompatible // indirect
+	github.com/google/pprof v0.0.0-20230207041349-798e818bf904 // indirect
 	github.com/gorilla/websocket v1.5.4-0.20250319132907-e064f32e3674 // indirect
 	github.com/iancoleman/strcase v0.3.0 // indirect
 	github.com/lucasb-eyer/go-colorful v1.2.0 // indirect
@@ -38,6 +42,7 @@ require (
 	golang.org/x/net v0.40.0 // indirect
 	golang.org/x/sys v0.33.0 // indirect
 	golang.org/x/term v0.32.0 // indirect
+	golang.org/x/text v0.26.0 // indirect
 )
 
 require (

@@ -13,15 +13,18 @@ import {
 let client: LanguageClient;
 
 const devEnv = false;
+const useBin = false;
 
 export function activate(context: ExtensionContext) {
+	// context.subscriptions.push(commands.registerCommand("format", () => {
+	// }))
+
 	let serverOptions: ServerOptions;
 	if (!devEnv) {
 		const lspWasmPath = context.asAbsolutePath(path.join('lib', 'calyxium-lsp.wasm'))
 		const wasmRuntimePath = context.asAbsolutePath(path.join('lib', 'wasm_exec.js'))
 		const serverPath = context.asAbsolutePath(path.join('out', 'server_wasm.js'))
 		
-		console.log(serverPath + " " + lspWasmPath)
 		serverOptions = {
 			run: {
 				module: serverPath,
@@ -39,13 +42,21 @@ export function activate(context: ExtensionContext) {
 			}
 		}
 	} else {
-		serverOptions = () => {
-			let socket = net.connect({ port: 7998 })
-			let result: StreamInfo = {
-				writer: socket,
-				reader: socket
+		if (useBin) {
+			serverOptions = {
+				command: "calyxium-lsp",
+				transport: TransportKind.stdio,
+				args: ["stdio"]
 			};
-			return Promise.resolve(result)
+		} else {
+			serverOptions = () => {
+				let socket = net.connect({ port: 7998 })
+				let result: StreamInfo = {
+					writer: socket,
+					reader: socket
+				};
+				return Promise.resolve(result)
+			}
 		}
 	}
 
@@ -55,11 +66,6 @@ export function activate(context: ExtensionContext) {
 	// 	args: [serverPath, wasmRuntimePath, lspWasmPath]
 	// };
 
-	// const serverOptions: ServerOptions = {
-	// 	command: "calyxium-lsp-win-x64",
-	// 	transport: TransportKind.stdio,
-	// 	args: ["stdio"]
-	// };
 
 
 	// const serverOptions: ServerOptions = {

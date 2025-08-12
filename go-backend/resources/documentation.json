@@ -6,7 +6,10 @@
             "for", "use", "mod", "true",
             "false", "enum", "struct", "class",
             "extends", "fn", "ref", "int", "float",
-			"bool", "string", "unit", "byte"
+			"bool", "string", "unit", "byte", "type",
+            "in",
+
+            "not", "lnot", "lor", "land", "lxor", "lsl", "lsr"
         ]
     },
     "functions": {
@@ -55,6 +58,11 @@
                 "item": "assert",
                 "detail": "bool -> unit",
                 "documentation": "\nAsserts that a condition is true. Halts execution on failure.\n\n***@since*** 0.1.0"
+            },
+            {
+                "item": "of_type",
+                "detail": "any -> string",
+                "documentation": "\nReturns the type of the given object\n\n***@since*** 0.1.0"
             }
         ]
     }

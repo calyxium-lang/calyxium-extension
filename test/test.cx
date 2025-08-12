@@ -1,12 +1,11 @@
-let fib(n: int): int {
-    let rec aux(n: int, a: int, b: int): int {
+let fib(n) {
+    let rec aux(n, a, b): int {
         if n == 0 then a else aux(n - 1, b, a + b)
     }
     aux(n, 0, 1)
 }
 
-to_bytes
-panic
-print
--- this is the max value until I add lazy eval
-print(fib(91))
+let a: string = "" in
+
+print(fib(10000))
+
